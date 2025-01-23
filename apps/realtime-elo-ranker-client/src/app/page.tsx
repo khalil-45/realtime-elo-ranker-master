@@ -61,6 +61,7 @@ function quickSortPlayers(arr: PlayerData[]): PlayerData[] {
  */
 export default function Home() {
   const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
+  
 
   if (!API_BASE_URL) {
     throw new Error("API_BASE_URL is not defined");
@@ -85,8 +86,8 @@ export default function Home() {
     try {
       fetchRanking(API_BASE_URL).then(setLadderData);
     } catch (error) {
-      // TODO: toast error
       console.error(error);
+      console.log("Error while fetching ranking");
     }
     const eventSource = subscribeRankingEvents(API_BASE_URL);
     eventSource.onmessage = (msg: MessageEvent) => {
