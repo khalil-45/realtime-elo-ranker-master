@@ -19,22 +19,19 @@ let SseController = class SseController {
         this.eventEmitter = eventEmitter;
     }
     sse() {
-        const playerCreated = (0, rxjs_1.fromEvent)(this.eventEmitter, 'player.created').pipe((0, operators_1.map)((player) => {
+        const playerCreated = (0, rxjs_1.fromEvent)(this.eventEmitter, 'player.created').pipe((0, operators_1.map)((event) => {
             return {
                 data: {
                     type: 'RankingUpdate',
-                    player: player,
+                    player: event.player,
                 }
             };
         }));
-        const matchResult = (0, rxjs_1.fromEvent)(this.eventEmitter, 'match.result').pipe((0, operators_1.map)((player) => {
+        const matchResult = (0, rxjs_1.fromEvent)(this.eventEmitter, 'match.result').pipe((0, operators_1.map)((event) => {
             return {
                 data: {
                     type: 'RankingUpdate',
-                    player: {
-                        id: player.id,
-                        rank: player.rank,
-                    },
+                    player: event.player,
                 }
             };
         }));

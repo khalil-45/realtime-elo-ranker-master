@@ -31,7 +31,15 @@ let PlayerService = class PlayerService {
         });
         const savedPlayer = await this.playerRepository.save(player);
         this.ranks[savedPlayer.id] = savedPlayer.rank;
-        this.eventEmitter.emit('player.created', savedPlayer);
+        const playerCreated = await this.playerRepository.findOne({ where: { id: createPlayerDto.id } });
+        if (playerCreated) {
+            this.eventEmitter.emit('player.created', {
+                player: {
+                    id: playerCreated.id,
+                    rank: playerCreated.rank,
+                },
+            });
+        }
         return savedPlayer;
     }
     async updaterank(playerId, newrank) {
