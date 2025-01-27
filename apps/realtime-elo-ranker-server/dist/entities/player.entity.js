@@ -21,7 +21,7 @@ __decorate([
 __decorate([
     (0, typeorm_1.Column)(),
     __metadata("design:type", Number)
-], Player.prototype, "ranking", void 0);
+], Player.prototype, "rank", void 0);
 exports.Player = Player = __decorate([
     (0, typeorm_1.Entity)()
 ], Player);

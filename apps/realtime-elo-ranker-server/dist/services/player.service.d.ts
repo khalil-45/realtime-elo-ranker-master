@@ -6,14 +6,11 @@ import { MatchResultDto } from 'src/dto/match-result.dto';
 export declare class PlayerService {
     private readonly playerRepository;
     private readonly eventEmitter;
-    private rankings;
+    private ranks;
     constructor(playerRepository: Repository<Player>, eventEmitter: EventEmitter2);
     createPlayer(createPlayerDto: CreatePlayerDto): Promise<Player>;
-    updateRanking(playerId: string, newRanking: number): Promise<Player>;
+    updaterank(playerId: string, newrank: number): Promise<Player>;
     getPlayers(): Promise<Player[]>;
-    getRankings(): {
-        [id: string]: number;
-    };
-    initializeRankings(): Promise<void>;
+    initializeranks(): Promise<void>;
     handleMatchResult(matchResultDto: MatchResultDto): Promise<void>;
 }

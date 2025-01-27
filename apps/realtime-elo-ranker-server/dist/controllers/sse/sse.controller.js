@@ -11,10 +11,34 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.SseController = void 0;
 const common_1 = require("@nestjs/common");
+const event_emitter_1 = require("@nestjs/event-emitter");
 const rxjs_1 = require("rxjs");
+const operators_1 = require("rxjs/operators");
 let SseController = class SseController {
+    constructor(eventEmitter) {
+        this.eventEmitter = eventEmitter;
+    }
     sse() {
-        return (0, rxjs_1.interval)(1000).pipe((0, rxjs_1.map)(() => ({ data: { message: 'Ranking updated' } })));
+        const playerCreated = (0, rxjs_1.fromEvent)(this.eventEmitter, 'player.created').pipe((0, operators_1.map)((player) => {
+            return {
+                data: {
+                    type: 'RankingUpdate',
+                    player: player,
+                }
+            };
+        }));
+        const matchResult = (0, rxjs_1.fromEvent)(this.eventEmitter, 'match.result').pipe((0, operators_1.map)((player) => {
+            return {
+                data: {
+                    type: 'RankingUpdate',
+                    player: {
+                        id: player.id,
+                        rank: player.rank,
+                    },
+                }
+            };
+        }));
+        return (0, rxjs_1.merge)(matchResult, playerCreated);
     }
 };
 exports.SseController = SseController;
@@ -25,6 +49,7 @@ __decorate([
     __metadata("design:returntype", rxjs_1.Observable)
 ], SseController.prototype, "sse", null);
 exports.SseController = SseController = __decorate([
-    (0, common_1.Controller)('api/ranking')
+    (0, common_1.Controller)('api/ranking'),
+    __metadata("design:paramtypes", [event_emitter_1.EventEmitter2])
 ], SseController);
 //# sourceMappingURL=sse.controller.js.map

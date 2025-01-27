@@ -1,4 +1,4 @@
 export class CreatePlayerDto {
     readonly id: string;
-    readonly initialRanking?: number;
+    readonly initialRank?: number;
   }

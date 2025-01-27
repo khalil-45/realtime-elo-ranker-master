@@ -6,5 +6,5 @@ export class Player {
   id: string;
 
   @Column()
-  ranking: number;
+  rank: number;
 }

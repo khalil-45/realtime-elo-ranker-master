@@ -22,65 +22,78 @@ let PlayerService = class PlayerService {
     constructor(playerRepository, eventEmitter) {
         this.playerRepository = playerRepository;
         this.eventEmitter = eventEmitter;
-        this.rankings = {};
+        this.ranks = {};
     }
     async createPlayer(createPlayerDto) {
         const player = this.playerRepository.create({
             id: createPlayerDto.id,
-            ranking: createPlayerDto.initialRanking ?? 1000,
+            rank: createPlayerDto.initialRank ?? 1000,
         });
         const savedPlayer = await this.playerRepository.save(player);
-        this.rankings[savedPlayer.id] = savedPlayer.ranking;
+        this.ranks[savedPlayer.id] = savedPlayer.rank;
         this.eventEmitter.emit('player.created', savedPlayer);
         return savedPlayer;
     }
-    async updateRanking(playerId, newRanking) {
+    async updaterank(playerId, newrank) {
         const player = await this.playerRepository.findOne({ where: { id: playerId } });
         if (!player) {
             throw new Error('Player not found');
         }
-        player.ranking = newRanking;
+        player.rank = newrank;
         const updatedPlayer = await this.playerRepository.save(player);
-        this.rankings[updatedPlayer.id] = updatedPlayer.ranking;
+        this.ranks[updatedPlayer.id] = updatedPlayer.rank;
         this.eventEmitter.emit('player.updated', updatedPlayer);
         return updatedPlayer;
     }
     async getPlayers() {
         return this.playerRepository.find();
     }
-    getRankings() {
-        return this.rankings;
-    }
-    async initializeRankings() {
+    async initializeranks() {
         const players = await this.playerRepository.find();
         players.forEach(player => {
-            this.rankings[player.id] = player.ranking;
+            this.ranks[player.id] = player.rank;
         });
     }
     async handleMatchResult(matchResultDto) {
         const { winner, loser, draw } = matchResultDto;
-        const winnerPlayer = await this.playerRepository.findOne({ where: { id: winner } });
-        const loserPlayer = await this.playerRepository.findOne({ where: { id: loser } });
+        let winnerPlayer = await this.playerRepository.findOne({ where: { id: winner } });
+        let loserPlayer = await this.playerRepository.findOne({ where: { id: loser } });
         if (!winnerPlayer || !loserPlayer) {
             throw new Error('One or both players not found');
         }
         const K = 32;
-        const WeWinner = 1 / (1 + Math.pow(10, (loserPlayer.ranking - winnerPlayer.ranking) / 400));
-        const WeLoser = 1 / (1 + Math.pow(10, (winnerPlayer.ranking - loserPlayer.ranking) / 400));
+        const WeWinner = 1 / (1 + Math.pow(10, (loserPlayer.rank - winnerPlayer.rank) / 400));
+        const WeLoser = 1 / (1 + Math.pow(10, (winnerPlayer.rank - loserPlayer.rank) / 400));
         if (draw) {
-            const winnerNewRanking = winnerPlayer.ranking + K * (0.5 - WeWinner);
-            const loserNewRanking = loserPlayer.ranking + K * (0.5 - WeLoser);
-            await this.updateRanking(winner, Math.round(winnerNewRanking));
-            await this.updateRanking(loser, Math.round(loserNewRanking));
+            const winnerNewrank = winnerPlayer.rank + K * (0.5 - WeWinner);
+            const loserNewrank = loserPlayer.rank + K * (0.5 - WeLoser);
+            await this.updaterank(winner, Math.round(winnerNewrank));
+            await this.updaterank(loser, Math.round(loserNewrank));
         }
         else {
-            const winnerNewRanking = winnerPlayer.ranking + K * (1 - WeWinner);
-            const loserNewRanking = loserPlayer.ranking + K * (0 - WeLoser);
-            await this.updateRanking(winner, Math.round(winnerNewRanking));
-            await this.updateRanking(loser, Math.round(loserNewRanking));
+            const winnerNewrank = winnerPlayer.rank + K * (1 - WeWinner);
+            const loserNewrank = loserPlayer.rank + K * (0 - WeLoser);
+            await this.updaterank(winner, Math.round(winnerNewrank));
+            await this.updaterank(loser, Math.round(loserNewrank));
         }
-        this.eventEmitter.emit('player.updated', winnerPlayer);
-        this.eventEmitter.emit('player.updated', loserPlayer);
+        winnerPlayer = await this.playerRepository.findOne({ where: { id: winner } });
+        loserPlayer = await this.playerRepository.findOne({ where: { id: loser } });
+        if (winnerPlayer) {
+            this.eventEmitter.emit('match.result', {
+                player: {
+                    id: winnerPlayer.id,
+                    rank: winnerPlayer.rank
+                }
+            });
+        }
+        if (loserPlayer) {
+            this.eventEmitter.emit('match.result', {
+                player: {
+                    id: loserPlayer.id,
+                    rank: loserPlayer.rank
+                }
+            });
+        }
     }
 };
 exports.PlayerService = PlayerService;
