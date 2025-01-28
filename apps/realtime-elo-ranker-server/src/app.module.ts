@@ -1,23 +1,20 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { EventEmitterModule } from '@nestjs/event-emitter';
-import { Player } from './entities/player.entity';
-import { PlayerService } from './services/player.service';
-import { PlayerController } from './controllers/player/player.controller';
-import { SseController } from './controllers/sse/sse.controller';
+import { PlayerModule } from './player.module';
+import { MatchModule } from './match.module';
+import { RankingModule } from './ranking.module';
 
 @Module({
   imports: [
     TypeOrmModule.forRoot({
       type: 'sqlite',
       database: 'db.sqlite',
-      entities: [Player],
+      entities: [__dirname + '/**/*.entity{.ts,.js}'],
       synchronize: true,
     }),
-    TypeOrmModule.forFeature([Player]),
-    EventEmitterModule.forRoot(),
+    PlayerModule,
+    MatchModule,
+    RankingModule,
   ],
-  controllers: [PlayerController, SseController],
-  providers: [PlayerService],
 })
 export class AppModule {}

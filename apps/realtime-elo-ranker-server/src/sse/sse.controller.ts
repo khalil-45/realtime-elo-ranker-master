@@ -2,7 +2,7 @@ import { Controller, Sse } from '@nestjs/common';
 import { EventEmitter2 } from '@nestjs/event-emitter';
 import { Observable, merge, fromEvent } from 'rxjs';
 import { map } from 'rxjs/operators';
-import { Player} from '../../interfaces/player.interface';
+import { Player} from '../player.interface';
 
 @Controller('api/ranking')
 export class SseController {
