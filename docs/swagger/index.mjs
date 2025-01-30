@@ -1,4 +1,4 @@
-import express from 'express';
+import express from 'express/index.js';
 import YAML from 'yamljs';
 import swaggerui from 'swagger-ui-express';
 import livereload from 'livereload';

@@ -9,9 +9,9 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.AppModule = void 0;
 const common_1 = require("@nestjs/common");
 const typeorm_1 = require("@nestjs/typeorm");
-const player_module_1 = require("./player.module");
-const match_module_1 = require("./match.module");
-const ranking_module_1 = require("./ranking.module");
+const ranking_module_1 = require("./ranking/ranking.module");
+const player_module_1 = require("./player/player.module");
+const match_module_1 = require("./match/match.module");
 let AppModule = class AppModule {
 };
 exports.AppModule = AppModule;

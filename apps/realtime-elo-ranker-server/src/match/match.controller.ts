@@ -1,6 +1,6 @@
-import { Controller, Post, Body } from '@nestjs/common';
-import { MatchService } from '../match.service';
-import { MatchResultDto } from '../dto/match-result.dto';
+import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import { MatchService } from './match.service';
+import { MatchResultDto } from './dto/match-result.dto';
 
 @Controller('api/match')
 export class MatchController {

@@ -1,19 +1,14 @@
-import { Controller, Get, Post, Body, Put } from '@nestjs/common';
-import { PlayerService } from '../player.service';
-import { CreatePlayerDto } from '../dto/create-player.dto';
-import { MatchResultDto } from '../dto/match-result.dto';
+import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import { PlayerService } from './player.service';
+import { CreatePlayerDto } from './dto/create-player.dto';
+import { UpdatePlayerDto } from './dto/update-player.dto';
 
-@Controller('api')
+@Controller('api/player')
 export class PlayerController {
   constructor(private readonly playerService: PlayerService) {}
 
-  @Post('player')
-  async createPlayer(@Body() createPlayerDto: CreatePlayerDto) {
-    return this.playerService.createPlayer(createPlayerDto);
-  }
-
-  @Get('ranking')
-  async getPlayers() {
-    return this.playerService.getPlayers();
+  @Post()
+  create(@Body() createPlayerDto: CreatePlayerDto) {
+    return this.playerService.create(createPlayerDto);
   }
 }

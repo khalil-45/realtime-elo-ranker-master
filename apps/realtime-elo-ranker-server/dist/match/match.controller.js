@@ -14,8 +14,8 @@ var __param = (this && this.__param) || function (paramIndex, decorator) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.MatchController = void 0;
 const common_1 = require("@nestjs/common");
-const match_service_1 = require("../match.service");
-const match_result_dto_1 = require("../dto/match-result.dto");
+const match_service_1 = require("./match.service");
+const match_result_dto_1 = require("./dto/match-result.dto");
 let MatchController = class MatchController {
     constructor(matchService) {
         this.matchService = matchService;

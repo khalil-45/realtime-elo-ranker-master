@@ -1,8 +1,8 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { PlayerModule } from './player.module';
-import { MatchModule } from './match.module';
-import { RankingModule } from './ranking.module';
+import { RankingModule } from './ranking/ranking.module';
+import { PlayerModule } from './player/player.module';
+import { MatchModule } from './match/match.module';
 
 @Module({
   imports: [
