@@ -24,11 +24,14 @@ let PlayerService = class PlayerService {
         this.eventEmitter = eventEmitter;
     }
     async create(createPlayerDto) {
-        const player = this.playerRepository.create({
+        const players = await this.playerRepository.find();
+        const totalRank = players.reduce((sum, player) => sum + player.rank, 0);
+        const averageRank = players.length ? totalRank / players.length : 1000;
+        const newPlayer = this.playerRepository.create({
             id: createPlayerDto.id,
-            rank: createPlayerDto.initialRank ?? 1000,
+            rank: createPlayerDto.initialRank ?? averageRank,
         });
-        const savedPlayer = await this.playerRepository.save(player);
+        const savedPlayer = await this.playerRepository.save(newPlayer);
         const playerCreated = await this.playerRepository.findOne({ where: { id: createPlayerDto.id } });
         if (playerCreated) {
             this.eventEmitter.emit('player.created', {

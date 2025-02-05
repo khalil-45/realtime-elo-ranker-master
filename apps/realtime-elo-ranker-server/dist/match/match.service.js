@@ -42,22 +42,18 @@ let MatchService = class MatchService {
         }
         winnerPlayer = await this.playerService.findOne(winner);
         loserPlayer = await this.playerService.findOne(loser);
-        if (winnerPlayer) {
-            this.eventEmitter.emit('match.result', {
-                player: {
-                    id: winnerPlayer.id,
-                    rank: winnerPlayer.rank
-                }
-            });
-        }
-        if (loserPlayer) {
-            this.eventEmitter.emit('match.result', {
-                player: {
-                    id: loserPlayer.id,
-                    rank: loserPlayer.rank
-                }
-            });
-        }
+        this.eventEmitter.emit('match.result', {
+            player: {
+                id: winnerPlayer.id,
+                rank: winnerPlayer.rank
+            }
+        });
+        this.eventEmitter.emit('match.result', {
+            player: {
+                id: loserPlayer.id,
+                rank: loserPlayer.rank
+            }
+        });
     }
 };
 exports.MatchService = MatchService;

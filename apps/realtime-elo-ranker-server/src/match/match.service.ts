@@ -43,23 +43,19 @@ async handleMatchResult(matchResultDto: MatchResultDto): Promise<void> {
     loserPlayer = await this.playerService.findOne(loser);
 
     // event emitter for winner
-    if (winnerPlayer) {
       this.eventEmitter.emit('match.result', {
         player: {
           id : winnerPlayer.id,
           rank : winnerPlayer.rank
         }
       });
-    }
 
     // event emitter for loser
-    if (loserPlayer) {
       this.eventEmitter.emit('match.result', {
         player: {
           id: loserPlayer.id,
           rank: loserPlayer.rank
         }
       });
-    }
   }
 }
