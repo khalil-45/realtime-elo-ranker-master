@@ -18,41 +18,62 @@ let MatchService = class MatchService {
         this.playerService = playerService;
         this.eventEmitter = eventEmitter;
     }
-    async handleMatchResult(matchResultDto) {
+    handleMatchResult(matchResultDto) {
         const { winner, loser, draw } = matchResultDto;
-        let winnerPlayer = await this.playerService.findOne(winner);
-        let loserPlayer = await this.playerService.findOne(loser);
-        if (!winnerPlayer || !loserPlayer) {
-            throw new Error('One or both players not found');
-        }
-        const K = 32;
-        const WeWinner = 1 / (1 + Math.pow(10, (loserPlayer.rank - winnerPlayer.rank) / 400));
-        const WeLoser = 1 / (1 + Math.pow(10, (winnerPlayer.rank - loserPlayer.rank) / 400));
-        if (draw) {
-            const winnerNewrank = winnerPlayer.rank + K * (0.5 - WeWinner);
-            const loserNewrank = loserPlayer.rank + K * (0.5 - WeLoser);
-            await this.playerService.updatePlayerRank(winner, Math.round(winnerNewrank));
-            await this.playerService.updatePlayerRank(loser, Math.round(loserNewrank));
-        }
-        else {
-            const winnerNewrank = winnerPlayer.rank + K * (1 - WeWinner);
-            const loserNewrank = loserPlayer.rank + K * (0 - WeLoser);
-            await this.playerService.updatePlayerRank(winner, Math.round(winnerNewrank));
-            await this.playerService.updatePlayerRank(loser, Math.round(loserNewrank));
-        }
-        winnerPlayer = await this.playerService.findOne(winner);
-        loserPlayer = await this.playerService.findOne(loser);
-        this.eventEmitter.emit('match.result', {
-            player: {
-                id: winnerPlayer.id,
-                rank: winnerPlayer.rank
+        let winnerPlayer;
+        let loserPlayer;
+        return this.playerService.findOne(winner)
+            .then(player => {
+            winnerPlayer = player;
+            return this.playerService.findOne(loser);
+        })
+            .then(player => {
+            loserPlayer = player;
+            if (!winnerPlayer || !loserPlayer) {
+                throw new Error('One or both players not found');
             }
-        });
-        this.eventEmitter.emit('match.result', {
-            player: {
-                id: loserPlayer.id,
-                rank: loserPlayer.rank
+            const K = 32;
+            const WeWinner = 1 / (1 + Math.pow(10, (loserPlayer.rank - winnerPlayer.rank) / 400));
+            const WeLoser = 1 / (1 + Math.pow(10, (winnerPlayer.rank - loserPlayer.rank) / 400));
+            if (draw) {
+                const winnerNewrank = winnerPlayer.rank + K * (0.5 - WeWinner);
+                const loserNewrank = loserPlayer.rank + K * (0.5 - WeLoser);
+                return Promise.all([
+                    this.playerService.updatePlayerRank(winner, Math.round(winnerNewrank)),
+                    this.playerService.updatePlayerRank(loser, Math.round(loserNewrank))
+                ]);
             }
+            else {
+                const winnerNewrank = winnerPlayer.rank + K * (1 - WeWinner);
+                const loserNewrank = loserPlayer.rank + K * (0 - WeLoser);
+                return Promise.all([
+                    this.playerService.updatePlayerRank(winner, Math.round(winnerNewrank)),
+                    this.playerService.updatePlayerRank(loser, Math.round(loserNewrank))
+                ]);
+            }
+        })
+            .then(() => this.playerService.findOne(winner))
+            .then(player => {
+            winnerPlayer = player;
+            return this.playerService.findOne(loser);
+        })
+            .then(player => {
+            loserPlayer = player;
+            if (!winnerPlayer || !loserPlayer) {
+                throw new Error('One or both players not found');
+            }
+            this.eventEmitter.emit('match.result', {
+                player: {
+                    id: winnerPlayer.id,
+                    rank: winnerPlayer.rank,
+                },
+            });
+            this.eventEmitter.emit('match.result', {
+                player: {
+                    id: loserPlayer.id,
+                    rank: loserPlayer.rank,
+                },
+            });
         });
     }
 };

@@ -7,7 +7,7 @@ import { PlayerService } from '../player/player.service';
 export class RankingService {
   constructor(private playerService : PlayerService) {}
 
-  async findAllPlayers() {
+  findAllPlayers() {
     return this.playerService.findAll();
   }
 }

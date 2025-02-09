@@ -3,5 +3,5 @@ import { MatchResultDto } from './dto/match-result.dto';
 export declare class MatchController {
     private readonly matchService;
     constructor(matchService: MatchService);
-    handleMatchResult(matchResultDto: MatchResultDto): Promise<void>;
+    publishMatchResult(matchResultDto: MatchResultDto): Promise<void>;
 }

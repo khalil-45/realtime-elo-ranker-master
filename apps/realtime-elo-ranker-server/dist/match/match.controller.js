@@ -20,7 +20,7 @@ let MatchController = class MatchController {
     constructor(matchService) {
         this.matchService = matchService;
     }
-    async handleMatchResult(matchResultDto) {
+    publishMatchResult(matchResultDto) {
         return this.matchService.handleMatchResult(matchResultDto);
     }
 };
@@ -31,7 +31,7 @@ __decorate([
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [match_result_dto_1.MatchResultDto]),
     __metadata("design:returntype", Promise)
-], MatchController.prototype, "handleMatchResult", null);
+], MatchController.prototype, "publishMatchResult", null);
 exports.MatchController = MatchController = __decorate([
     (0, common_1.Controller)('api/match'),
     __metadata("design:paramtypes", [match_service_1.MatchService])

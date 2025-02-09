@@ -23,43 +23,48 @@ let PlayerService = class PlayerService {
         this.playerRepository = playerRepository;
         this.eventEmitter = eventEmitter;
     }
-    async create(createPlayerDto) {
-        const players = await this.playerRepository.find();
-        const totalRank = players.reduce((sum, player) => sum + player.rank, 0);
-        const averageRank = players.length ? totalRank / players.length : 1000;
-        const newPlayer = this.playerRepository.create({
-            id: createPlayerDto.id,
-            rank: createPlayerDto.initialRank ?? averageRank,
-        });
-        const savedPlayer = await this.playerRepository.save(newPlayer);
-        const playerCreated = await this.playerRepository.findOne({ where: { id: createPlayerDto.id } });
-        if (playerCreated) {
-            this.eventEmitter.emit('player.created', {
-                player: {
-                    id: playerCreated.id,
-                    rank: playerCreated.rank,
-                },
+    create(createPlayerDto) {
+        return this.playerRepository.find().then(players => {
+            const totalRank = players.reduce((sum, player) => sum + player.rank, 0);
+            const averageRank = players.length ? totalRank / players.length : 1000;
+            const newPlayer = this.playerRepository.create({
+                id: createPlayerDto.id,
+                rank: createPlayerDto.initialRank ?? averageRank,
             });
-        }
-        return savedPlayer;
+            return this.playerRepository.save(newPlayer).then(savedPlayer => {
+                return this.playerRepository.findOne({ where: { id: createPlayerDto.id } }).then(playerCreated => {
+                    if (playerCreated) {
+                        this.eventEmitter.emit('player.created', {
+                            player: {
+                                id: playerCreated.id,
+                                rank: playerCreated.rank,
+                            },
+                        });
+                    }
+                    return savedPlayer;
+                });
+            });
+        });
     }
     findAll() {
         return this.playerRepository.find({ order: { rank: 'DESC' } });
     }
-    async findOne(id) {
-        const player = await this.playerRepository.findOne({ where: { id } });
-        if (!player) {
-            throw new Error('Player not found');
-        }
-        return player;
+    findOne(id) {
+        return this.playerRepository.findOne({ where: { id } }).then(player => {
+            if (!player) {
+                throw new Error('Player not found');
+            }
+            return player;
+        });
     }
-    async updatePlayerRank(id, newRank) {
-        const player = await this.findOne(id);
-        if (!player) {
-            throw new common_1.BadRequestException('Player not found');
-        }
-        player.rank = newRank;
-        return this.playerRepository.save(player);
+    updatePlayerRank(id, newRank) {
+        return this.findOne(id).then(player => {
+            if (!player) {
+                throw new common_1.BadRequestException('Player not found');
+            }
+            player.rank = newRank;
+            return this.playerRepository.save(player);
+        });
     }
 };
 exports.PlayerService = PlayerService;

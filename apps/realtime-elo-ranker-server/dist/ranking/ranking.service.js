@@ -16,7 +16,7 @@ let RankingService = class RankingService {
     constructor(playerService) {
         this.playerService = playerService;
     }
-    async findAllPlayers() {
+    findAllPlayers() {
         return this.playerService.findAll();
     }
 };

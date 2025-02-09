@@ -8,6 +8,6 @@ export declare class PlayerService {
     constructor(playerRepository: Repository<Player>, eventEmitter: EventEmitter2);
     create(createPlayerDto: CreatePlayerDto): Promise<Player>;
     findAll(): Promise<Player[]>;
-    findOne(id: string): Promise<Player>;
+    findOne(id: string): Promise<Player | null>;
     updatePlayerRank(id: string, newRank: number): Promise<Player>;
 }
